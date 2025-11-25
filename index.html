@@ -87,21 +87,31 @@
     showLoader: false,
     activeTestimonial: 0,
     testimonialInterval: null,
+    bannerImages: [
+        'https://raw.githubusercontent.com/snip3rxxgames/img-PF/refs/heads/main/bamboo_banner.jpg',
+        'https://raw.githubusercontent.com/snip3rxxgames/img-PF/refs/heads/main/hardwood_banner.jpg',
+        'https://raw.githubusercontent.com/snip3rxxgames/img-PF/refs/heads/main/plush_banner.jpg',
+        'https://raw.githubusercontent.com/snip3rxxgames/img-PF/refs/heads/main/sheetvinyl_banner.jpg',
+        'https://raw.githubusercontent.com/snip3rxxgames/img-PF/refs/heads/main/tile_banner.jpg'
+    ],
+    currentBanner: 0,
+    bannerInterval: null,
     init() {
         this.detectDeviceOnLoad();
 
-        // Watch for page changes to start/stop the slider
         this.$watch('currentPage', (value) => {
             if (value === 'home') {
-                this.startTestimonialSlider(); // Start slider on home page
+                this.startTestimonialSlider();
+                this.startBannerSlider();
             } else {
-                this.stopTestimonialSlider(); // Stop slider on other pages
+                this.stopTestimonialSlider();
+                this.stopBannerSlider();
             }
         });
 
-        // Start it once on init if we are on home
         if (this.currentPage === 'home') {
             this.startTestimonialSlider();
+            this.startBannerSlider();
         }
     },
     detectDeviceOnLoad() {
@@ -128,27 +138,36 @@
                 sessionStorage.setItem('deviceType', this.isMobile ? 'mobile' : 'desktop');
                 this.sourceDetected = true;
                 this.showLoader = false;
-            }, 4000); // 4-second loading time
+            }, 4000);
         }
     },
-    closeModal() {
-        this.modalOpen = false;
-    },
+    closeModal() { this.modalOpen = false; },
     startTestimonialSlider() {
-        // Clear any existing interval first
         this.stopTestimonialSlider(); 
-        // Start a new one
         this.testimonialInterval = setInterval(() => {
-            this.activeTestimonial = (this.activeTestimonial + 1) % 4; // 4 testimonials
-        }, 6000); // 6 seconds
+            this.activeTestimonial = (this.activeTestimonial + 1) % 4;
+        }, 6000);
     },
     stopTestimonialSlider() { 
         if (this.testimonialInterval) {
             clearInterval(this.testimonialInterval);
             this.testimonialInterval = null;
         }
+    },
+    startBannerSlider() {
+        this.stopBannerSlider();
+        this.bannerInterval = setInterval(() => {
+            this.currentBanner = (this.currentBanner + 1) % this.bannerImages.length;
+        }, 5000);
+    },
+    stopBannerSlider() {
+        if (this.bannerInterval) {
+            clearInterval(this.bannerInterval);
+            this.bannerInterval = null;
+        }
     }
 }">
+
 
     <!-- Header -->
     <header class="bg-white/90 sticky top-0 z-40 shadow-sm backdrop-blur-lg">
@@ -192,7 +211,11 @@
         <!-- ======================================== -->
         <div x-show="currentPage === 'home'" class="animate-fade-in">
             <!-- Hero Section -->
-            <section class="relative h-[60vh] md:h-[80vh] min-h-[500px] bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1548013146-72c7c7004b69?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');">
+           <section 
+    class="relative h-[60vh] md:h-[80vh] min-h-[500px] bg-cover bg-center transition-all duration-1000"
+    :style="`background-image: url('${bannerImages[currentBanner]}')`"
+>
+
                 <div class="absolute inset-0 bg-black/60"></div>
                 <div class="container mx-auto max-w-7xl px-6 lg:px-8 h-full flex items-center">
                     <div class="relative max-w-2xl text-left">
